@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Disaster Management OB Entry</title>
+<style>
+body { 
+    font-family: Arial, sans-serif; 
+    padding: 10px; 
+    background: #f4f4f4; 
+    margin: 0; 
+}
+h2 { 
+    text-align: center; 
+    font-size: 1.8em; 
+    margin-bottom: 10px; 
+}
+select, input, button { 
+    width: 100%; 
+    padding: 12px; 
+    margin-top: 8px; 
+    font-size: 1em; 
+    border-radius: 8px; 
+    border: 1px solid #ccc; 
+    box-sizing: border-box;
+}
+input:disabled {
+    background-color: #e0e0e0;
+}
+button { 
+    background-color: #25D366; 
+    color: white; 
+    border: none; 
+    font-weight: bold; 
+    margin-top: 10px; 
+    cursor: pointer; 
+}
+button.clear { 
+    background-color: #ff4d4d; 
+}
+button.export { 
+    background-color: #007bff; 
+}
+.summary { 
+    margin-top: 20px; 
+    background: white; 
+    padding: 10px; 
+    border-radius: 10px; 
+    max-height: 250px; 
+    overflow-y: auto; 
+}
+.summary h3 { 
+    margin-top: 0; 
+    font-size: 1.2em; 
+}
+.summary div { 
+    margin-top: 5px; 
+    font-size: 0.95em; 
+    word-wrap: break-word;
+}
+.livePreview { 
+    font-style: italic; 
+    color: #555; 
+}
+@media (max-width: 600px) {
+    h2 { font-size: 1.5em; }
+    select, input, button { font-size: 1em; padding: 10px; }
+    .summary { max-height: 200px; padding: 8px; }
+    .summary h3 { font-size: 1.1em; }
+    .summary div { font-size: 0.9em; }
+}
+</style>
+</head>
+<body>
+
+<h2>Disaster Management OB Entry</h2>
+
+<label>Vehicle</label>
+<select id="vehicle">
+    <option value="">Select Vehicle</option>
+    <option>DX28</option>
+    <option>DX58</option>
+    <option>DX107</option>
+    <option>DX114</option>
+</select>
+
+<label>Type of Call</label>
+<select id="callType">
+    <option value="">Select Type</option>
+    <option>TRAUMA</option>
+    <option>MEDICAL</option>
+    <option>MVA</option>
+    <option>MBA</option>
+    <option>PVA</option>
+    <option>FIRECALL</option>
+    <option>SPECIAL SERVICE</option>
+    <option>E-FUEL</option>
+    <option>OUTDUTY</option>
+    <option>AREA PATROL</option>
+    <option>RETURN TO STATION</option>
+</select>
+
+<label>Area</label>
+<input type="text" id="area" placeholder="Enter Area">
+
+<label>KM</label>
+<input type="number" id="km" placeholder="Enter KM" inputmode="numeric">
+
+<button onclick="shareToWhatsApp()">Share to WhatsApp</button>
+
+<div class="summary">
+    <h3>Summary</h3>
+    <div id="summaryList"></div>
+    <button class="clear" onclick="clearSummary()">Clear Summary</button>
+    <button class="export" onclick="exportSummary()">Export Summary</button>
+</div>
+
+<script>
+let summaryData = JSON.parse(localStorage.getItem("callSummary")) || [];
+
+// Get timestamp HH:MM
+function getTimestamp() {
+    const now = new Date();
+    const h = now.getHours().toString().padStart(2,'0');
+    const m = now.getMinutes().toString().padStart(2,'0');
+    return `${h}:${m}`;
+}
+
+// Check if callType disables area (RETURN TO STATION, OUTDUTY, AREA PATROL)
+function isAreaDisabled(callType) {
+    return ["RETURN TO STATION", "OUTDUTY", "AREA PATROL"].includes(callType);
+}
+
+// Update summary display including live preview
+function updateSummaryDisplay() {
+    const summaryDiv = document.getElementById("summaryList");
+    summaryDiv.innerHTML = "";
+
+    const vehicle = document.getElementById("vehicle").value;
+    const callType = document.getElementById("callType").value;
+    const area = document.getElementById("area").value;
+    const km = document.getElementById("km").value;
+
+    summaryData.forEach(item => {
+        const div = document.createElement("div");
+        div.textContent = item;
+        summaryDiv.appendChild(div);
+    });
+
+    if(vehicle || callType || area || km){
+        const areaText = (!isAreaDisabled(callType) && area) ? area + " " : "";
+        // Only remove "mobile" for RETURN TO STATION
+        const mobileText = (callType === "RETURN TO STATION") ? "" : "mobile ";
+        const liveEntry = `${getTimestamp()} – ${callType || ""}: ${vehicle || ""} ${mobileText}${areaText}on ${km || ""}km`;
+        const liveDiv = document.createElement("div");
+        liveDiv.className = "livePreview";
+        liveDiv.textContent = liveEntry;
+        summaryDiv.appendChild(liveDiv);
+    }
+
+    summaryDiv.scrollTop = summaryDiv.scrollHeight;
+}
+
+// Log entry permanently
+function logEntry() {
+    const vehicle = document.getElementById("vehicle").value;
+    const callType = document.getElementById("callType").value;
+    const area = document.getElementById("area").value;
+    const km = document.getElementById("km").value;
+
+    if(vehicle && callType && (isAreaDisabled(callType) || area) && km){
+        const areaText = (!isAreaDisabled(callType) && area) ? area + " " : "";
+        const mobileText = (callType === "RETURN TO STATION") ? "" : "mobile ";
+        const entry = `${getTimestamp()} – ${callType}: ${vehicle} ${mobileText}${areaText}on ${km}km`;
+        summaryData.push(entry);
+        localStorage.setItem("callSummary", JSON.stringify(summaryData));
+
+        document.getElementById("vehicle").value = "";
+        document.getElementById("callType").value = "";
+        document.getElementById("area").value = "";
+        document.getElementById("km").value = "";
+
+        updateSummaryDisplay();
+        return entry;
+    }
+    return null;
+}
+
+// Share via WhatsApp
+function shareToWhatsApp() {
+    let entry;
+    const vehicle = document.getElementById("vehicle").value;
+    const callType = document.getElementById("callType").value;
+    const area = document.getElementById("area").value;
+    const km = document.getElementById("km").value;
+
+    if(vehicle && callType && (isAreaDisabled(callType) || area) && km){
+        entry = logEntry();
+    } else if(summaryData.length > 0){
+        entry = summaryData[summaryData.length - 1];
+    } else {
+        alert("Please complete all fields before sending.");
+        return;
+    }
+
+    window.open("https://wa.me/?text=" + encodeURIComponent(entry));
+}
+
+// Clear summary
+function clearSummary() {
+    if(confirm("Are you sure you want to clear the summary?")){
+        summaryData = [];
+        localStorage.setItem("callSummary", JSON.stringify(summaryData));
+        updateSummaryDisplay();
+    }
+}
+
+// Export summary with bold heading and date
+function exportSummary() {
+    if(summaryData.length === 0){
+        alert("No calls to export.");
+        return;
+    }
+
+    const today = new Date();
+    const dateStr = today.toLocaleDateString();
+    const header = `*SHIFT OB ENTRIES*\n${dateStr}\n\n`;
+    const message = header + summaryData.join("\n");
+
+    window.open("https://wa.me/?text=" + encodeURIComponent(message));
+}
+
+// Handle Type of Call changes
+function handleCallTypeChange() {
+    const callType = document.getElementById("callType").value;
+    const areaField = document.getElementById("area");
+    const kmField = document.getElementById("km");
+
+    if(isAreaDisabled(callType)){
+        areaField.value = "";
+        areaField.disabled = true;
+        kmField.value = "";
+    } else {
+        areaField.disabled = false;
+    }
+
+    updateSummaryDisplay();
+}
+
+// Live update (no auto-log on input)
+['vehicle','callType','area','km'].forEach(id=>{
+    const el = document.getElementById(id);
+    el.addEventListener('input', updateSummaryDisplay);
+    el.addEventListener('change', updateSummaryDisplay);
+});
+
+// Auto-log when KM is completed (blur or change)
+const kmField = document.getElementById('km');
+
+function autoLogKM() {
+    const kmValue = kmField.value;
+    if(kmValue){
+        logEntry(); 
+    }
+}
+
+kmField.addEventListener('blur', autoLogKM);
+kmField.addEventListener('change', autoLogKM);
+
+// Detect Type of Call changes
+document.getElementById('callType').addEventListener('change', handleCallTypeChange);
+
+// Initial display
+updateSummaryDisplay();
+</script>
+
+</body>
+</html>
