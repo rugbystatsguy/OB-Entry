@@ -16,7 +16,7 @@ h2 {
     font-size: 1.8em; 
     margin-bottom: 10px; 
 }
-select, input, button { 
+select, input { 
     width: 100%; 
     padding: 12px; 
     margin-top: 8px; 
@@ -25,23 +25,53 @@ select, input, button {
     border: 1px solid #ccc; 
     box-sizing: border-box;
 }
+
 input:disabled {
     background-color: #e0e0e0;
 }
+
+/* ROUND BUTTONS */
 button { 
-    background-color: #25D366; 
-    color: white; 
-    border: none; 
-    font-weight: bold; 
-    margin-top: 10px; 
-    cursor: pointer; 
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
+
+/* BUTTON COLORS */
+button.whatsapp { 
+    background-color: #25D366; 
+}
+
 button.clear { 
     background-color: #ff4d4d; 
+    color: white;
 }
+
 button.export { 
     background-color: #007bff; 
+    color: white;
 }
+
+/* CENTER WHATSAPP BUTTON */
+.whatsappContainer{
+    display:flex;
+    justify-content:center;
+    margin-top:10px;
+}
+
+/* SUMMARY BUTTON ROW */
+.buttonRow{
+    display:flex;
+    justify-content:center;
+    gap:120px; /* increased spacing */
+    margin-top:20px;
+}
+
 .summary { 
     margin-top: 20px; 
     background: white; 
@@ -50,25 +80,35 @@ button.export {
     max-height: 250px; 
     overflow-y: auto; 
 }
+
 .summary h3 { 
     margin-top: 0; 
     font-size: 1.2em; 
 }
+
 .summary div { 
     margin-top: 5px; 
     font-size: 0.95em; 
     word-wrap: break-word;
 }
+
 .livePreview { 
     font-style: italic; 
     color: #555; 
 }
+
+button svg {
+    width: 28px;
+    height: 28px;
+}
+
 @media (max-width: 600px) {
     h2 { font-size: 1.5em; }
-    select, input, button { font-size: 1em; padding: 10px; }
+    select, input { font-size: 1em; padding: 10px; }
     .summary { max-height: 200px; padding: 8px; }
     .summary h3 { font-size: 1.1em; }
     .summary div { font-size: 0.9em; }
+    button svg { width: 22px; height: 22px; }
 }
 </style>
 </head>
@@ -78,27 +118,28 @@ button.export {
 
 <label>Vehicle</label>
 <select id="vehicle">
-    <option value="">Select Vehicle</option>
-    <option>DX28</option>
-    <option>DX58</option>
-    <option>DX107</option>
-    <option>DX114</option>
+<option value="">Select Vehicle</option>
+<option>DX28</option>
+<option>DX58</option>
+<option>DX107</option>
+<option>DX114</option>
 </select>
 
 <label>Type of Call</label>
 <select id="callType">
-    <option value="">Select Type</option>
-    <option>TRAUMA</option>
-    <option>MEDICAL</option>
-    <option>MVA</option>
-    <option>MBA</option>
-    <option>PVA</option>
-    <option>FIRECALL</option>
-    <option>SPECIAL SERVICE</option>
-    <option>E-FUEL</option>
-    <option>OUTDUTY</option>
-    <option>AREA PATROL</option>
-    <option>RETURN TO STATION</option>
+<option value="">Select Type</option>
+<option>TRAUMA</option>
+<option>MEDICAL</option>
+<option>MVA</option>
+<option>MBA</option>
+<option>PVA</option>
+<option>GSW</option>
+<option>FIRECALL</option>
+<option>SPECIAL SERVICE</option>
+<option>E-FUEL</option>
+<option>OUTDUTY</option>
+<option>AREA PATROL</option>
+<option>RETURN TO STATION</option>
 </select>
 
 <label>Area</label>
@@ -107,171 +148,170 @@ button.export {
 <label>KM</label>
 <input type="number" id="km" placeholder="Enter KM" inputmode="numeric">
 
-<button onclick="shareToWhatsApp()">Share to WhatsApp</button>
+<div class="whatsappContainer">
+<button class="whatsapp" onclick="shareToWhatsApp()">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="white">
+<path d="M20.52 3.48A11.82 11.82 0 0 0 12.05 0C5.46 0 .09 5.37.09 11.97c0 2.11.55 4.17 1.59 5.99L0 24l6.21-1.63a11.9 11.9 0 0 0 5.84 1.49h.01c6.59 0 11.96-5.37 11.96-11.97 0-3.19-1.24-6.19-3.5-8.41zM12.06 21.5h-.01a9.47 9.47 0 0 1-4.82-1.33l-.34-.2-3.68.97.98-3.59-.22-.37a9.47 9.47 0 0 1-1.45-5.03c0-5.23 4.26-9.49 9.49-9.49 2.53 0 4.91.99 6.7 2.79a9.4 9.4 0 0 1 2.79 6.7c0 5.23-4.26 9.49-9.49 9.49zm5.2-7.13c-.28-.14-1.67-.82-1.93-.91-.26-.1-.45-.14-.64.14-.19.28-.73.91-.9 1.09-.16.19-.33.21-.61.07-.28-.14-1.18-.43-2.25-1.38-.83-.74-1.39-1.65-1.55-1.93-.16-.28-.02-.43.12-.57.13-.13.28-.33.42-.5.14-.17.19-.28.28-.47.09-.19.05-.36-.02-.5-.07-.14-.64-1.54-.88-2.11-.23-.56-.47-.49-.64-.5-.17-.01-.36-.01-.56-.01-.19 0-.5.07-.76.36-.26.28-1 1-.99 2.43.02 1.43 1.03 2.81 1.18 3 .14.19 2.03 3.1 4.93 4.35.69.3 1.23.48 1.65.61.69.22 1.31.19 1.81.12.55-.08 1.67-.68 1.91-1.34.24-.66.24-1.23.17-1.34-.07-.1-.26-.17-.55-.31z"/>
+</svg>
+</button>
+</div>
 
 <div class="summary">
-    <h3>Summary</h3>
-    <div id="summaryList"></div>
-    <button class="clear" onclick="clearSummary()">Clear Summary</button>
-    <button class="export" onclick="exportSummary()">Export Summary</button>
+<h3>Summary</h3>
+<div id="summaryList"></div>
+
+<div class="buttonRow">
+<button class="clear" onclick="clearSummary()">
+<svg xmlns="http://www.w3.org/2000/svg" fill="white" viewBox="0 0 24 24">
+<path d="M3 6h18v2H3V6zm2 3h14v13H5V9zm3 3v7h2v-7H8zm4 0v7h2v-7h-2zm4 0v7h2v-7h-2z"/>
+</svg>
+</button>
+<button class="export" onclick="exportSummary()">
+<svg xmlns="http://www.w3.org/2000/svg" fill="white" viewBox="0 0 24 24">
+<path d="M5 20h14v-2H5v2zm7-18L5.33 9h3.34v6h4.66V9h3.34L12 2z"/>
+</svg>
+</button>
+</div>
 </div>
 
 <script>
 let summaryData = JSON.parse(localStorage.getItem("callSummary")) || [];
 
-// Get timestamp HH:MM
-function getTimestamp() {
-    const now = new Date();
-    const h = now.getHours().toString().padStart(2,'0');
-    const m = now.getMinutes().toString().padStart(2,'0');
-    return `${h}:${m}`;
+function getTimestamp(){
+const now=new Date();
+return now.getHours().toString().padStart(2,'0')+":"+now.getMinutes().toString().padStart(2,'0');
 }
 
-// Check if callType disables area (RETURN TO STATION, OUTDUTY, AREA PATROL)
-function isAreaDisabled(callType) {
-    return ["RETURN TO STATION", "OUTDUTY", "AREA PATROL"].includes(callType);
+function isAreaDisabled(callType){
+return ["RETURN TO STATION","OUTDUTY","AREA PATROL"].includes(callType);
 }
 
-// Update summary display including live preview
-function updateSummaryDisplay() {
-    const summaryDiv = document.getElementById("summaryList");
-    summaryDiv.innerHTML = "";
+function updateSummaryDisplay(){
+const summaryDiv=document.getElementById("summaryList");
+summaryDiv.innerHTML="";
 
-    const vehicle = document.getElementById("vehicle").value;
-    const callType = document.getElementById("callType").value;
-    const area = document.getElementById("area").value;
-    const km = document.getElementById("km").value;
+const vehicle=document.getElementById("vehicle").value;
+const callType=document.getElementById("callType").value;
+const area=document.getElementById("area").value;
+const km=document.getElementById("km").value;
 
-    summaryData.forEach(item => {
-        const div = document.createElement("div");
-        div.textContent = item;
-        summaryDiv.appendChild(div);
-    });
-
-    if(vehicle || callType || area || km){
-        const areaText = (!isAreaDisabled(callType) && area) ? area + " " : "";
-        // Only remove "mobile" for RETURN TO STATION
-        const mobileText = (callType === "RETURN TO STATION") ? "" : "mobile ";
-        const liveEntry = `${getTimestamp()} – ${callType || ""}: ${vehicle || ""} ${mobileText}${areaText}on ${km || ""}km`;
-        const liveDiv = document.createElement("div");
-        liveDiv.className = "livePreview";
-        liveDiv.textContent = liveEntry;
-        summaryDiv.appendChild(liveDiv);
-    }
-
-    summaryDiv.scrollTop = summaryDiv.scrollHeight;
-}
-
-// Log entry permanently
-function logEntry() {
-    const vehicle = document.getElementById("vehicle").value;
-    const callType = document.getElementById("callType").value;
-    const area = document.getElementById("area").value;
-    const km = document.getElementById("km").value;
-
-    if(vehicle && callType && (isAreaDisabled(callType) || area) && km){
-        const areaText = (!isAreaDisabled(callType) && area) ? area + " " : "";
-        const mobileText = (callType === "RETURN TO STATION") ? "" : "mobile ";
-        const entry = `${getTimestamp()} – ${callType}: ${vehicle} ${mobileText}${areaText}on ${km}km`;
-        summaryData.push(entry);
-        localStorage.setItem("callSummary", JSON.stringify(summaryData));
-
-        document.getElementById("vehicle").value = "";
-        document.getElementById("callType").value = "";
-        document.getElementById("area").value = "";
-        document.getElementById("km").value = "";
-
-        updateSummaryDisplay();
-        return entry;
-    }
-    return null;
-}
-
-// Share via WhatsApp
-function shareToWhatsApp() {
-    let entry;
-    const vehicle = document.getElementById("vehicle").value;
-    const callType = document.getElementById("callType").value;
-    const area = document.getElementById("area").value;
-    const km = document.getElementById("km").value;
-
-    if(vehicle && callType && (isAreaDisabled(callType) || area) && km){
-        entry = logEntry();
-    } else if(summaryData.length > 0){
-        entry = summaryData[summaryData.length - 1];
-    } else {
-        alert("Please complete all fields before sending.");
-        return;
-    }
-
-    window.open("https://wa.me/?text=" + encodeURIComponent(entry));
-}
-
-// Clear summary
-function clearSummary() {
-    if(confirm("Are you sure you want to clear the summary?")){
-        summaryData = [];
-        localStorage.setItem("callSummary", JSON.stringify(summaryData));
-        updateSummaryDisplay();
-    }
-}
-
-// Export summary with bold heading and date
-function exportSummary() {
-    if(summaryData.length === 0){
-        alert("No calls to export.");
-        return;
-    }
-
-    const today = new Date();
-    const dateStr = today.toLocaleDateString();
-    const header = `*SHIFT OB ENTRIES*\n${dateStr}\n\n`;
-    const message = header + summaryData.join("\n");
-
-    window.open("https://wa.me/?text=" + encodeURIComponent(message));
-}
-
-// Handle Type of Call changes
-function handleCallTypeChange() {
-    const callType = document.getElementById("callType").value;
-    const areaField = document.getElementById("area");
-    const kmField = document.getElementById("km");
-
-    if(isAreaDisabled(callType)){
-        areaField.value = "";
-        areaField.disabled = true;
-        kmField.value = "";
-    } else {
-        areaField.disabled = false;
-    }
-
-    updateSummaryDisplay();
-}
-
-// Live update (no auto-log on input)
-['vehicle','callType','area','km'].forEach(id=>{
-    const el = document.getElementById(id);
-    el.addEventListener('input', updateSummaryDisplay);
-    el.addEventListener('change', updateSummaryDisplay);
+summaryData.forEach(item=>{
+const div=document.createElement("div");
+div.textContent=item;
+summaryDiv.appendChild(div);
 });
 
-// Auto-log when KM is completed (blur or change)
-const kmField = document.getElementById('km');
-
-function autoLogKM() {
-    const kmValue = kmField.value;
-    if(kmValue){
-        logEntry(); 
-    }
+if(vehicle||callType||area||km){
+const areaText=(!isAreaDisabled(callType)&&area)?area+" ":"";
+const mobileText=(callType==="RETURN TO STATION")?"":"mobile ";
+const liveEntry=`${getTimestamp()} – ${callType||""}: ${vehicle||""} ${mobileText}${areaText}on ${km||""}km`;
+const liveDiv=document.createElement("div");
+liveDiv.className="livePreview";
+liveDiv.textContent=liveEntry;
+summaryDiv.appendChild(liveDiv);
 }
 
-kmField.addEventListener('blur', autoLogKM);
-kmField.addEventListener('change', autoLogKM);
+summaryDiv.scrollTop=summaryDiv.scrollHeight;
+}
 
-// Detect Type of Call changes
-document.getElementById('callType').addEventListener('change', handleCallTypeChange);
+function logEntry(){
+const vehicle=document.getElementById("vehicle").value;
+const callType=document.getElementById("callType").value;
+const area=document.getElementById("area").value;
+const km=document.getElementById("km").value;
 
-// Initial display
+if(vehicle&&callType&&(isAreaDisabled(callType)||area)&&km){
+const areaText=(!isAreaDisabled(callType)&&area)?area+" ":"";
+const mobileText=(callType==="RETURN TO STATION")?"":"mobile ";
+const entry=`${getTimestamp()} – ${callType}: ${vehicle} ${mobileText}${areaText}on ${km}km`;
+summaryData.push(entry);
+localStorage.setItem("callSummary",JSON.stringify(summaryData));
+
+document.getElementById("vehicle").value="";
+document.getElementById("callType").value="";
+document.getElementById("area").value="";
+document.getElementById("km").value="";
+
+updateSummaryDisplay();
+return entry;
+}
+return null;
+}
+
+function shareToWhatsApp(){
+let entry;
+const vehicle=document.getElementById("vehicle").value;
+const callType=document.getElementById("callType").value;
+const area=document.getElementById("area").value;
+const km=document.getElementById("km").value;
+
+if(vehicle&&callType&&(isAreaDisabled(callType)||area)&&km){
+entry=logEntry();
+}else if(summaryData.length>0){
+entry=summaryData[summaryData.length-1];
+}else{
+alert("Please complete all fields before sending.");
+return;
+}
+
+window.open("https://wa.me/?text="+encodeURIComponent(entry));
+}
+
+function clearSummary(){
+if(confirm("Are you sure you want to clear the summary?")){
+summaryData=[];
+localStorage.setItem("callSummary",JSON.stringify(summaryData));
+updateSummaryDisplay();
+}
+}
+
+function exportSummary(){
+if(summaryData.length===0){
+alert("No calls to export.");
+return;
+}
+
+const today=new Date();
+const dateStr=today.toLocaleDateString();
+const header=`*SHIFT OB ENTRIES*\n${dateStr}\n\n`;
+const message=header+summaryData.join("\n");
+
+window.open("https://wa.me/?text="+encodeURIComponent(message));
+}
+
+function handleCallTypeChange(){
+const callType=document.getElementById("callType").value;
+const areaField=document.getElementById("area");
+const kmField=document.getElementById("km");
+
+if(isAreaDisabled(callType)){
+areaField.value="";
+areaField.disabled=true;
+kmField.value="";
+}else{
+areaField.disabled=false;
+}
+
+updateSummaryDisplay();
+}
+
+['vehicle','callType','area','km'].forEach(id=>{
+const el=document.getElementById(id);
+el.addEventListener('input',updateSummaryDisplay);
+el.addEventListener('change',updateSummaryDisplay);
+});
+
+const kmField=document.getElementById('km');
+
+function autoLogKM(){
+if(kmField.value){logEntry();}
+}
+
+kmField.addEventListener('blur',autoLogKM);
+kmField.addEventListener('change',autoLogKM);
+
+document.getElementById('callType').addEventListener('change',handleCallTypeChange);
+
 updateSummaryDisplay();
 </script>
 
