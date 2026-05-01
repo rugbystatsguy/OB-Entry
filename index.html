@@ -34,8 +34,6 @@ input:disabled,select:disabled{
 background-color:#e0e0e0;
 }
 
-/* ROUND BUTTONS */
-
 button{
 width:60px;
 height:60px;
@@ -47,36 +45,15 @@ align-items:center;
 justify-content:center;
 }
 
-/* BUTTON COLORS */
-
-button.whatsapp{
-background-color:#25D366;
-transition: transform 0.2s;
-}
-
-button.whatsapp:hover{
-transform: scale(1.05);
-}
-
-button.clear{
-background-color:#ff4d4d;
-color:white;
-}
-
-button.export{
-background-color:#007bff;
-color:white;
-}
-
-/* CENTER WHATSAPP BUTTON */
+button.whatsapp{background:#25D366;}
+button.clear{background:#ff4d4d;color:white;}
+button.export{background:#007bff;color:white;}
 
 .whatsappContainer{
 display:flex;
 justify-content:center;
 margin-top:10px;
 }
-
-/* SUMMARY BUTTON ROW */
 
 .buttonRow{
 display:flex;
@@ -108,40 +85,6 @@ word-wrap:break-word;
 .livePreview{
 font-style:italic;
 color:#555;
-}
-
-button svg{
-width:28px;
-height:28px;
-}
-
-@media (max-width:600px){
-
-h2{font-size:1.5em;}
-
-select,input{
-font-size:1em;
-padding:10px;
-}
-
-.summary{
-max-height:200px;
-padding:8px;
-}
-
-.summary h3{
-font-size:1.1em;
-}
-
-.summary div{
-font-size:0.9em;
-}
-
-button svg{
-width:22px;
-height:22px;
-}
-
 }
 
 </style>
@@ -182,46 +125,20 @@ height:22px;
 <input type="text" id="area" placeholder="Enter Area">
 
 <label>KM</label>
-<input type="number" id="km" placeholder="Enter KM" inputmode="numeric">
+<input type="number" id="km" placeholder="Enter KM">
 
 <div class="whatsappContainer">
-
-<button class="whatsapp" onclick="shareToWhatsApp()" aria-label="Share to WhatsApp">
-
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" fill="white" style="width:28px; height:28px;">
-<path d="M16 0C7.163 0 0 7.163 0 16c0 2.817.738 5.459 2.03 7.74L0 32l8.395-2.02C11.541 31.262 14.183 32 17 32c8.837 0 16-7.163 16-16S24.837 0 16 0zm0 29.333c-2.648 0-5.145-.695-7.347-1.905l-.516-.302-5.062 1.337 1.342-5.022-.32-.542A13.328 13.328 0 0 1 2.667 16C2.667 8.707 8.707 2.667 16 2.667c7.293 0 13.333 6.04 13.333 13.333S23.293 29.333 16 29.333zm7.04-10.667c-.293-.146-1.737-.857-2.007-.955-.27-.098-.467-.146-.664.146-.196.293-.757.955-.927 1.15-.17.196-.34.22-.633.073-.293-.146-1.236-.455-2.354-1.446-.87-.774-1.455-1.73-1.63-2.024-.17-.293-.018-.45.128-.595.13-.13.293-.34.44-.51.146-.17.195-.293.293-.488.098-.196.05-.366-.025-.512-.073-.146-.664-1.596-.91-2.19-.24-.576-.48-.498-.664-.508-.17-.01-.366-.012-.56-.012-.196 0-.512.073-.78.366s-1.03 1.006-1.03 2.45c0 1.444 1.055 2.842 1.2 3.036.146.196 2.07 3.166 5.015 4.437.7.303 1.245.484 1.67.618.701.226 1.337.194 1.84.118.56-.085 1.737-.71 1.985-1.397.244-.687.244-1.277.17-1.398-.073-.12-.27-.196-.564-.34z"/>
-</svg>
-
-</button>
-
+<button class="whatsapp" onclick="shareToWhatsApp()">W</button>
 </div>
 
 <div class="summary">
-
 <h3>Summary</h3>
-
 <div id="summaryList"></div>
 
 <div class="buttonRow">
-
-<button class="clear" onclick="clearSummary()">
-
-<svg xmlns="http://www.w3.org/2000/svg" fill="white" viewBox="0 0 24 24">
-<path d="M3 6h18v2H3V6zm2 3h14v13H5V9zm3 3v7h2v-7H8zm4 0v7h2v-7h-2zm4 0v7h2v-7h-2z"/>
-</svg>
-
-</button>
-
-<button class="export" onclick="exportSummary()">
-
-<svg xmlns="http://www.w3.org/2000/svg" fill="white" viewBox="0 0 24 24">
-<path d="M5 20h14v-2H5v2zm7-18L5.33 9h3.34v6h4.66V9h3.34L12 2z"/>
-</svg>
-
-</button>
-
+<button class="clear" onclick="clearSummary()">C</button>
+<button class="export" onclick="exportSummary()">E</button>
 </div>
-
 </div>
 
 <script>
@@ -229,7 +146,7 @@ height:22px;
 let summaryData=JSON.parse(localStorage.getItem("callSummary"))||[];
 
 const incidents={
-"TRAUMA CALL":["MVA","MBA","PVA","NEAR DROWNING","ASSAULT","GSW"],
+"TRAUMA CALL":["ASSAULT","GSW","MBA","MVA","NEAR DROWNING","PVA","BURNS PATIENT","SMOKE INHALATION"],
 "MEDICAL":["PERSON COLLAPSE","CPR in progress"],
 "FIRECALL":["Vegetation alight","House alight","Wood & Iron structures alight"]
 };
@@ -240,46 +157,35 @@ return now.getHours().toString().padStart(2,'0')+":"+now.getMinutes().toString()
 }
 
 function isAreaDisabled(callType){
-return["RETURN TO STATION","OUTDUTY","AREA PATROL"].includes(callType);
-}
-
-function updateIncidentDropdown(){
-const callType=document.getElementById("callType").value;
-const incidentSelect=document.getElementById("incident");
-incidentSelect.innerHTML='<option value="">Select Incident</option>';
-
-if(incidents[callType]){
-incidentSelect.disabled=false;
-
-incidents[callType].forEach(i=>{
-const opt=document.createElement("option");
-opt.textContent=i;
-incidentSelect.appendChild(opt);
-});
-
-}else{
-incidentSelect.disabled=true;
-}
+return["RETURN TO STATION","OUTDUTY","E-FUEL","AREA PATROL"].includes(callType);
 }
 
 function formatEntry(vehicle,callType,incident,area,km){
 
-if(["E-FUEL","OUTDUTY","AREA PATROL"].includes(callType)){
-return `${getTimestamp()} - ${vehicle}: Mobile ${callType} on ${km}km`;
+if(callType==="E-FUEL"){
+return `${getTimestamp()} - ${vehicle}: Mobile E-Fuel on ${km}km`;
+}
+
+if(callType==="OUTDUTY"){
+return `${getTimestamp()} - ${vehicle}: Mobile Outduty on ${km}km`;
+}
+
+if(callType==="AREA PATROL"){
+return `${getTimestamp()} - ${vehicle}: Mobile Area Patrol on ${km}km`;
 }
 
 if(callType==="RETURN TO STATION"){
-return `${getTimestamp()} - ${vehicle}: RETURN TO STATION on ${km}km`;
+return `${getTimestamp()} - ${vehicle}: Return to station on ${km}km`;
 }
 
-const areaText=(!isAreaDisabled(callType)&&area)?area+" ":"";
+/* AREA DISPLAY */
+const areaText = area && area.trim() !== "" ? `${area} ` : "";
 
 if(["TRAUMA CALL","MEDICAL","FIRECALL"].includes(callType)){
 return `${getTimestamp()} - ${callType}: ${vehicle} mobile ${incident} ${areaText}on ${km}km`;
 }
 
 return `${getTimestamp()} - ${callType}: ${vehicle} mobile ${areaText}on ${km}km`;
-
 }
 
 function updateSummaryDisplay(){
@@ -287,34 +193,11 @@ function updateSummaryDisplay(){
 const summaryDiv=document.getElementById("summaryList");
 summaryDiv.innerHTML="";
 
-const vehicle=document.getElementById("vehicle").value;
-const callType=document.getElementById("callType").value;
-const incident=document.getElementById("incident").value;
-const area=document.getElementById("area").value;
-const km=document.getElementById("km").value;
-
 summaryData.forEach(item=>{
 const div=document.createElement("div");
 div.textContent=item;
 summaryDiv.appendChild(div);
 });
-
-if(vehicle&&callType&&km){
-
-if(["TRAUMA CALL","MEDICAL","FIRECALL"].includes(callType)&&!incident){
-return;
-}
-
-const preview=formatEntry(vehicle,callType,incident,area,km);
-
-const liveDiv=document.createElement("div");
-liveDiv.className="livePreview";
-liveDiv.textContent=preview;
-summaryDiv.appendChild(liveDiv);
-
-}
-
-summaryDiv.scrollTop=summaryDiv.scrollHeight;
 
 }
 
@@ -326,14 +209,15 @@ const incident=document.getElementById("incident").value;
 const area=document.getElementById("area").value;
 const km=document.getElementById("km").value;
 
-if(!vehicle||!callType||!km)return null;
+if(!vehicle||!callType||!km) return null;
 
-if(["TRAUMA CALL","MEDICAL","FIRECALL"].includes(callType)&&!incident)return null;
+if(["TRAUMA CALL","MEDICAL","FIRECALL"].includes(callType)&&!incident){
+return null;
+}
 
 const entry=formatEntry(vehicle,callType,incident,area,km);
 
 summaryData.push(entry);
-
 localStorage.setItem("callSummary",JSON.stringify(summaryData));
 
 document.getElementById("vehicle").value="";
@@ -346,7 +230,6 @@ document.getElementById("km").value="";
 updateSummaryDisplay();
 
 return entry;
-
 }
 
 function shareToWhatsApp(){
@@ -363,80 +246,78 @@ return;
 }
 
 window.open("https://wa.me/?text="+encodeURIComponent(entry));
-
 }
 
 function clearSummary(){
-
-if(confirm("Are you sure you want to clear the summary?")){
-
+if(confirm("Are you sure?")){
 summaryData=[];
-
 localStorage.setItem("callSummary",JSON.stringify(summaryData));
-
 updateSummaryDisplay();
-
 }
-
 }
 
 function exportSummary(){
-
 if(summaryData.length===0){
 alert("No calls to export.");
 return;
 }
 
-const today=new Date();
-const dateStr=today.toLocaleDateString();
-
-const header=`*SHIFT OB ENTRIES*\n${dateStr}\n\n`;
-
-const message=header+summaryData.join("\n");
-
-window.open("https://wa.me/?text="+encodeURIComponent(message));
-
+const header=`SHIFT OB ENTRIES\n${new Date().toLocaleDateString()}\n\n`;
+window.open("https://wa.me/?text="+encodeURIComponent(header+summaryData.join("\n")));
 }
 
-function handleCallTypeChange(){
+/* KM AUTO LOG */
+const kmField=document.getElementById("km");
 
-updateIncidentDropdown();
+function autoLogKM(){
+if(!kmField.value) return;
+logEntry();
+}
 
-const callType=document.getElementById("callType").value;
+kmField.addEventListener("keydown",function(e){
+if(e.key==="Enter"){
+e.preventDefault();
+autoLogKM();
+}
+});
+
+kmField.addEventListener("blur",autoLogKM);
+
+/* CALL TYPE HANDLER */
+document.getElementById('callType').addEventListener('change',function(){
+
+const callType=this.value;
+const incidentSelect=document.getElementById("incident");
 const areaField=document.getElementById("area");
 
-if(isAreaDisabled(callType)){
+/* RESET INCIDENT */
+incidentSelect.innerHTML='<option value="">Select Incident</option>';
+
+if(incidents[callType]){
+incidentSelect.disabled=false;
+incidents[callType].forEach(i=>{
+const opt=document.createElement("option");
+opt.textContent=i;
+incidentSelect.appendChild(opt);
+});
+}else{
+incidentSelect.disabled=true;
+}
+
+/* AREA LOCK FIX */
+const lockArea = ["RETURN TO STATION","OUTDUTY","E-FUEL","AREA PATROL"].includes(callType);
+
+if(lockArea){
 areaField.value="";
 areaField.disabled=true;
+areaField.style.backgroundColor="#e0e0e0";
 }else{
 areaField.disabled=false;
+areaField.style.backgroundColor="white";
 }
 
 updateSummaryDisplay();
-
-}
-
-['vehicle','callType','incident','area','km'].forEach(id=>{
-
-const el=document.getElementById(id);
-
-el.addEventListener('input',updateSummaryDisplay);
-el.addEventListener('change',updateSummaryDisplay);
-
 });
-
-document.getElementById('callType').addEventListener('change',handleCallTypeChange);
-
-const kmField=document.getElementById('km');
-
-function autoLogKM(){
-if(kmField.value){
-logEntry();
-}
-}
-
-kmField.addEventListener('blur',autoLogKM);
-kmField.addEventListener('change',autoLogKM);
 
 updateSummaryDisplay();
 
