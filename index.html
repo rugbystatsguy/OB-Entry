@@ -247,131 +247,194 @@ function updateIncidentDropdown(){
 const callType=document.getElementById("callType").value;
 const incidentSelect=document.getElementById("incident");
 incidentSelect.innerHTML='<option value="">Select Incident</option>';
+
 if(incidents[callType]){
 incidentSelect.disabled=false;
+
 incidents[callType].forEach(i=>{
 const opt=document.createElement("option");
 opt.textContent=i;
 incidentSelect.appendChild(opt);
 });
+
 }else{
 incidentSelect.disabled=true;
 }
 }
 
 function formatEntry(vehicle,callType,incident,area,km){
-const areaText=(!isAreaDisabled(callType)&&area)?area+" ":"";
-if(["TRAUMA CALL","MEDICAL","FIRECALL"].includes(callType)){
-return `${getTimestamp()} – ${callType}: ${vehicle} mobile ${incident} ${areaText}on ${km}km`;
+
+if(["E-FUEL","OUTDUTY","AREA PATROL"].includes(callType)){
+return `${getTimestamp()} - ${vehicle}: Mobile ${callType} on ${km}km`;
 }
-const mobileText=(callType==="RETURN TO STATION")?"":"mobile ";
-return `${getTimestamp()} – ${callType}: ${vehicle} ${mobileText}${areaText}on ${km}km`;
+
+if(callType==="RETURN TO STATION"){
+return `${getTimestamp()} - ${vehicle}: RETURN TO STATION on ${km}km`;
+}
+
+const areaText=(!isAreaDisabled(callType)&&area)?area+" ":"";
+
+if(["TRAUMA CALL","MEDICAL","FIRECALL"].includes(callType)){
+return `${getTimestamp()} - ${callType}: ${vehicle} mobile ${incident} ${areaText}on ${km}km`;
+}
+
+return `${getTimestamp()} - ${callType}: ${vehicle} mobile ${areaText}on ${km}km`;
+
 }
 
 function updateSummaryDisplay(){
+
 const summaryDiv=document.getElementById("summaryList");
 summaryDiv.innerHTML="";
+
 const vehicle=document.getElementById("vehicle").value;
 const callType=document.getElementById("callType").value;
 const incident=document.getElementById("incident").value;
 const area=document.getElementById("area").value;
 const km=document.getElementById("km").value;
+
 summaryData.forEach(item=>{
 const div=document.createElement("div");
 div.textContent=item;
 summaryDiv.appendChild(div);
 });
+
 if(vehicle&&callType&&km){
-if(["TRAUMA CALL","MEDICAL","FIRECALL"].includes(callType)&&!incident){return;}
+
+if(["TRAUMA CALL","MEDICAL","FIRECALL"].includes(callType)&&!incident){
+return;
+}
+
 const preview=formatEntry(vehicle,callType,incident,area,km);
+
 const liveDiv=document.createElement("div");
 liveDiv.className="livePreview";
 liveDiv.textContent=preview;
 summaryDiv.appendChild(liveDiv);
+
 }
+
 summaryDiv.scrollTop=summaryDiv.scrollHeight;
+
 }
 
 function logEntry(){
+
 const vehicle=document.getElementById("vehicle").value;
 const callType=document.getElementById("callType").value;
 const incident=document.getElementById("incident").value;
 const area=document.getElementById("area").value;
 const km=document.getElementById("km").value;
+
 if(!vehicle||!callType||!km)return null;
+
 if(["TRAUMA CALL","MEDICAL","FIRECALL"].includes(callType)&&!incident)return null;
+
 const entry=formatEntry(vehicle,callType,incident,area,km);
+
 summaryData.push(entry);
+
 localStorage.setItem("callSummary",JSON.stringify(summaryData));
+
 document.getElementById("vehicle").value="";
 document.getElementById("callType").value="";
 document.getElementById("incident").innerHTML='<option value="">Select Incident</option>';
 document.getElementById("incident").disabled=true;
 document.getElementById("area").value="";
 document.getElementById("km").value="";
+
 updateSummaryDisplay();
+
 return entry;
+
 }
 
 function shareToWhatsApp(){
+
 let entry=logEntry();
+
 if(!entry&&summaryData.length>0){
 entry=summaryData[summaryData.length-1];
 }
+
 if(!entry){
 alert("Please complete all required fields.");
 return;
 }
+
 window.open("https://wa.me/?text="+encodeURIComponent(entry));
+
 }
 
 function clearSummary(){
+
 if(confirm("Are you sure you want to clear the summary?")){
+
 summaryData=[];
+
 localStorage.setItem("callSummary",JSON.stringify(summaryData));
+
 updateSummaryDisplay();
+
 }
+
 }
 
 function exportSummary(){
+
 if(summaryData.length===0){
 alert("No calls to export.");
 return;
 }
+
 const today=new Date();
 const dateStr=today.toLocaleDateString();
+
 const header=`*SHIFT OB ENTRIES*\n${dateStr}\n\n`;
+
 const message=header+summaryData.join("\n");
+
 window.open("https://wa.me/?text="+encodeURIComponent(message));
+
 }
 
 function handleCallTypeChange(){
+
 updateIncidentDropdown();
+
 const callType=document.getElementById("callType").value;
 const areaField=document.getElementById("area");
+
 if(isAreaDisabled(callType)){
 areaField.value="";
 areaField.disabled=true;
 }else{
 areaField.disabled=false;
 }
+
 updateSummaryDisplay();
+
 }
 
 ['vehicle','callType','incident','area','km'].forEach(id=>{
+
 const el=document.getElementById(id);
+
 el.addEventListener('input',updateSummaryDisplay);
 el.addEventListener('change',updateSummaryDisplay);
+
 });
 
 document.getElementById('callType').addEventListener('change',handleCallTypeChange);
 
 const kmField=document.getElementById('km');
+
 function autoLogKM(){
 if(kmField.value){
 logEntry();
 }
 }
+
 kmField.addEventListener('blur',autoLogKM);
 kmField.addEventListener('change',autoLogKM);
 
