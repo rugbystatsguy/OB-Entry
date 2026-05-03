@@ -6,24 +6,40 @@
 <title>Disaster Management OB Entry</title>
 
 <style>
-
 body{
-font-family:Arial,sans-serif;
-padding:10px;
-background:#f4f4f4;
 margin:0;
+font-family:Arial,sans-serif;
+background:#f4f4f4;
+padding:12px;
 }
 
+/* HEADER */
 h2{
 text-align:center;
-font-size:1.8em;
-margin-bottom:10px;
+margin:10px 0 15px;
+font-size:1.6em;
+}
+
+/* CARD STYLE */
+.card{
+background:#fff;
+border-radius:12px;
+padding:12px;
+margin-bottom:12px;
+box-shadow:0 2px 8px rgba(0,0,0,0.08);
+}
+
+/* INPUTS */
+label{
+font-size:0.9em;
+margin-top:8px;
+display:block;
 }
 
 select,input{
 width:100%;
-padding:12px;
-margin-top:8px;
+padding:10px;
+margin-top:5px;
 font-size:1em;
 border-radius:8px;
 border:1px solid #ccc;
@@ -31,62 +47,68 @@ box-sizing:border-box;
 }
 
 input:disabled,select:disabled{
-background-color:#e0e0e0;
+background:#e0e0e0;
 }
 
-button{
-width:60px;
-height:60px;
+/* WHATSAPP BUTTON */
+.whatsappContainer{
+display:flex;
+justify-content:center;
+padding:10px 0;
+}
+
+button.whatsapp{
+width:70px;
+height:70px;
 border-radius:50%;
 border:none;
+background:#25D366;
+display:flex;
+align-items:center;
+justify-content:center;
+cursor:pointer;
+}
+
+button svg{
+width:28px;
+height:28px;
+}
+
+/* SUMMARY */
+.summaryBox{
+max-height:220px;
+overflow-y:auto;
+padding:5px;
+}
+
+.summaryItem{
+font-size:0.95em;
+padding:6px 0;
+border-bottom:1px solid #eee;
+}
+
+/* BUTTON ROW */
+.buttonRow{
+display:flex;
+justify-content:space-between;
+gap:10px;
+margin-top:10px;
+}
+
+button.action{
+flex:1;
+height:50px;
+border:none;
+border-radius:10px;
+color:#fff;
 cursor:pointer;
 display:flex;
 align-items:center;
 justify-content:center;
 }
 
-button.whatsapp{background:#25D366;}
-button.clear{background:#ff4d4d;color:white;}
-button.export{background:#007bff;color:white;}
-
-.whatsappContainer{
-display:flex;
-justify-content:center;
-margin-top:10px;
-}
-
-.buttonRow{
-display:flex;
-justify-content:center;
-gap:120px;
-margin-top:20px;
-}
-
-.summary{
-margin-top:20px;
-background:white;
-padding:10px;
-border-radius:10px;
-max-height:250px;
-overflow-y:auto;
-}
-
-.summary h3{
-margin-top:0;
-font-size:1.2em;
-}
-
-.summary div{
-margin-top:5px;
-font-size:0.95em;
-word-wrap:break-word;
-}
-
-button svg{
-width:26px;
-height:26px;
-display:block;
-}
+.clear{background:#ff4d4d;}
+.export{background:#007bff;}
 
 </style>
 </head>
@@ -94,6 +116,9 @@ display:block;
 <body>
 
 <h2>Disaster Management OB Entry</h2>
+
+<!-- INPUT CARD -->
+<div class="card">
 
 <label>Vehicle</label>
 <select id="vehicle">
@@ -128,36 +153,34 @@ display:block;
 <label>KM</label>
 <input type="number" id="km" placeholder="Enter KM">
 
+</div>
+
+<!-- WHATSAPP -->
+<div class="card">
 <div class="whatsappContainer">
 
-<button class="whatsapp" onclick="shareToWhatsApp()" aria-label="WhatsApp">
+<button class="whatsapp" onclick="shareToWhatsApp()">
 
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" fill="white">
 <path d="M16 2.67c-7.36 0-13.33 5.97-13.33 13.33 0 2.64.77 5.11 2.09 7.18L4 28l5.01-1.31c2.01 1.1 4.31 1.73 6.99 1.73 7.36 0 13.33-5.97 13.33-13.33S23.36 2.67 16 2.67zm0 24.53c-2.35 0-4.53-.62-6.43-1.7l-.46-.27-2.97.78.79-2.9-.3-.47a11.2 11.2 0 0 1-1.71-5.94c0-6.19 5.03-11.22 11.22-11.22s11.22 5.03 11.22 11.22S22.19 27.2 16 27.2z"/>
-<path d="M19.11 17.44c-.27-.14-1.6-.79-1.85-.88-.25-.09-.43-.14-.61.14-.18.27-.7.88-.86 1.06-.16.18-.32.2-.59.07-.27-.14-1.14-.42-2.17-1.34-.8-.71-1.34-1.59-1.5-1.86-.16-.27-.02-.42.12-.56.12-.12.27-.32.41-.48.14-.16.18-.27.27-.45.09-.18.05-.34-.02-.48-.07-.14-.61-1.47-.84-2.01-.22-.52-.44-.45-.61-.46h-.52c-.18 0-.48.07-.73.34-.25.27-.95.93-.95 2.27 0 1.34.97 2.64 1.11 2.82.14.18 1.93 2.95 4.68 4.12.65.28 1.15.44 1.54.56.65.21 1.24.18 1.71.11.52-.08 1.6-.66 1.83-1.3.23-.64.23-1.2.16-1.3-.07-.1-.25-.18-.52-.32z"/>
 </svg>
 
 </button>
 
 </div>
+</div>
 
-<div class="summary">
-<h3>Summary</h3>
-<div id="summaryList"></div>
+<!-- SUMMARY -->
+<div class="card">
+
+<h3 style="margin:0 0 10px;">Summary</h3>
+
+<div id="summaryList" class="summaryBox"></div>
 
 <div class="buttonRow">
 
-<button class="clear" onclick="clearSummary()" aria-label="Clear">
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="white">
-<path d="M3 6h18v2H3V6zm2 3h14v13H5V9zm3 3v7h2v-7H8zm4 0v7h2v-7h-2zm4 0v7h2v-7h-2z"/>
-</svg>
-</button>
-
-<button class="export" onclick="exportSummary()" aria-label="Export">
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="white">
-<path d="M5 20h14v-2H5v2zm7-18L5.33 9h3.34v6h4.66V9h3.34L12 2z"/>
-</svg>
-</button>
+<button class="action clear" onclick="clearSummary()">Clear</button>
+<button class="action export" onclick="exportSummary()">Export</button>
 
 </div>
 </div>
@@ -215,6 +238,7 @@ summaryDiv.innerHTML="";
 
 summaryData.forEach(item=>{
 const div=document.createElement("div");
+div.className="summaryItem";
 div.textContent=item;
 summaryDiv.appendChild(div);
 });
@@ -252,7 +276,7 @@ updateSummaryDisplay();
 return entry;
 }
 
-/* UPDATED: WhatsApp now removes time */
+/* WHATSAPP (NO TIME REMOVAL NEEDED HERE ANYMORE IF YOU KEEP FORMAT SAME) */
 function shareToWhatsApp(){
 
 let entry=logEntry();
@@ -266,7 +290,6 @@ alert("Please complete all required fields.");
 return;
 }
 
-/* REMOVE TIME BEFORE SENDING */
 entry = entry.replace(/^\d{2}:\d{2}\s-\s/, "");
 
 window.open("https://wa.me/?text="+encodeURIComponent(entry));
@@ -290,53 +313,7 @@ const header=`SHIFT OB ENTRIES\n${new Date().toLocaleDateString()}\n\n`;
 window.open("https://wa.me/?text="+encodeURIComponent(header+summaryData.join("\n")));
 }
 
-const kmField=document.getElementById("km");
-
-function autoLogKM(){
-if(!kmField.value) return;
-logEntry();
-}
-
-kmField.addEventListener("keydown",function(e){
-if(e.key==="Enter"){
-e.preventDefault();
-autoLogKM();
-}
-});
-
-kmField.addEventListener("blur",autoLogKM);
-
-document.getElementById('callType').addEventListener('change',function(){
-
-const callType=this.value;
-const incidentSelect=document.getElementById("incident");
-const areaField=document.getElementById("area");
-
-incidentSelect.innerHTML='<option value="">Select Incident</option>';
-
-if(incidents[callType]){
-incidentSelect.disabled=false;
-incidents[callType].forEach(i=>{
-const opt=document.createElement("option");
-opt.textContent=i;
-incidentSelect.appendChild(opt);
-});
-}else{
-incidentSelect.disabled=true;
-}
-
-if(isAreaLocked(callType)){
-areaField.value="";
-areaField.disabled=true;
-areaField.style.backgroundColor="#e0e0e0";
-}else{
-areaField.disabled=false;
-areaField.style.backgroundColor="white";
-}
-
-updateSummaryDisplay();
-});
-
+/* INIT */
 updateSummaryDisplay();
 
 </script>
