@@ -13,14 +13,12 @@ background:#f4f4f4;
 padding:12px;
 }
 
-/* HEADER */
 h2{
 text-align:center;
 margin:10px 0 15px;
 font-size:1.6em;
 }
 
-/* CARD STYLE */
 .card{
 background:#fff;
 border-radius:12px;
@@ -29,7 +27,6 @@ margin-bottom:12px;
 box-shadow:0 2px 8px rgba(0,0,0,0.08);
 }
 
-/* INPUTS */
 label{
 font-size:0.9em;
 margin-top:8px;
@@ -50,7 +47,6 @@ input:disabled,select:disabled{
 background:#e0e0e0;
 }
 
-/* WHATSAPP BUTTON */
 .whatsappContainer{
 display:flex;
 justify-content:center;
@@ -74,7 +70,6 @@ width:28px;
 height:28px;
 }
 
-/* SUMMARY */
 .summaryBox{
 max-height:220px;
 overflow-y:auto;
@@ -87,7 +82,6 @@ padding:6px 0;
 border-bottom:1px solid #eee;
 }
 
-/* BUTTON ROW */
 .buttonRow{
 display:flex;
 justify-content:space-between;
@@ -109,7 +103,6 @@ justify-content:center;
 
 .clear{background:#ff4d4d;}
 .export{background:#007bff;}
-
 </style>
 </head>
 
@@ -117,7 +110,6 @@ justify-content:center;
 
 <h2>Disaster Management OB Entry</h2>
 
-<!-- INPUT CARD -->
 <div class="card">
 
 <label>Vehicle</label>
@@ -132,14 +124,14 @@ justify-content:center;
 <label>Type of Call</label>
 <select id="callType">
 <option value="">Select Type</option>
-<option>TRAUMA CALL</option>
-<option>MEDICAL</option>
-<option>FIRECALL</option>
-<option>SPECIAL SERVICE</option>
-<option>E-FUEL</option>
-<option>OUTDUTY</option>
-<option>AREA PATROL</option>
-<option>RETURN TO STATION</option>
+<option value="TRAUMA CALL">TRAUMA CALL</option>
+<option value="MEDICAL">MEDICAL</option>
+<option value="FIRECALL">FIRECALL</option>
+<option value="SPECIAL SERVICE">SPECIAL SERVICE</option>
+<option value="E-FUEL">E-FUEL</option>
+<option value="OUTDUTY">OUTDUTY</option>
+<option value="AREA PATROL">AREA PATROL</option>
+<option value="RETURN TO STATION">RETURN TO STATION</option>
 </select>
 
 <label>Type of Incident</label>
@@ -155,115 +147,120 @@ justify-content:center;
 
 </div>
 
-<!-- WHATSAPP -->
 <div class="card">
 <div class="whatsappContainer">
-
-<button class="whatsapp" onclick="shareToWhatsApp()">
-
+<button class="whatsapp" onclick="shareToWhatsApp(event)">
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" fill="white">
 <path d="M16 2.67c-7.36 0-13.33 5.97-13.33 13.33 0 2.64.77 5.11 2.09 7.18L4 28l5.01-1.31c2.01 1.1 4.31 1.73 6.99 1.73 7.36 0 13.33-5.97 13.33-13.33S23.36 2.67 16 2.67zm0 24.53c-2.35 0-4.53-.62-6.43-1.7l-.46-.27-2.97.78.79-2.9-.3-.47a11.2 11.2 0 0 1-1.71-5.94c0-6.19 5.03-11.22 11.22-11.22s11.22 5.03 11.22 11.22S22.19 27.2 16 27.2z"/>
 </svg>
-
 </button>
-
 </div>
 </div>
 
-<!-- SUMMARY -->
 <div class="card">
-
 <h3 style="margin:0 0 10px;">Summary</h3>
-
 <div id="summaryList" class="summaryBox"></div>
 
 <div class="buttonRow">
-
 <button class="action clear" onclick="clearSummary()">Clear</button>
 <button class="action export" onclick="exportSummary()">Export</button>
-
 </div>
 </div>
 
 <script>
 
-let summaryData=JSON.parse(localStorage.getItem("callSummary"))||[];
+let summaryData = JSON.parse(localStorage.getItem("callSummary")) || [];
+let draftEntry = null;
 
-const incidents={
+const incidents = {
 "TRAUMA CALL":["ASSAULT","GSW","MBA","MVA","NEAR DROWNING","PVA","STABBING","BURNS PATIENT","SMOKE INHALATION"],
 "MEDICAL":["PERSON COLLAPSE","CPR in progress"],
 "FIRECALL":["Vegetation alight","House alight","Wood & Iron structures alight"]
 };
 
 function getTimestamp(){
-const now=new Date();
-return now.getHours().toString().padStart(2,'0')+":"+now.getMinutes().toString().padStart(2,'0');
+const now = new Date();
+return now.getHours().toString().padStart(2,'0') + ":" + now.getMinutes().toString().padStart(2,'0');
 }
 
 function isAreaLocked(callType){
-return["RETURN TO STATION","OUTDUTY","E-FUEL","AREA PATROL"].includes(callType);
+return ["RETURN TO STATION","OUTDUTY","E-FUEL","AREA PATROL"].includes(callType);
 }
 
-function formatEntry(vehicle,callType,incident,area,km){
+/* DROPDOWN */
+document.getElementById("callType").addEventListener("change", function(){
 
-if(callType==="E-FUEL"){
-return `${getTimestamp()} - ${vehicle}: Mobile E-Fuel on ${km}km`;
-}
+const callType = this.value;
+const incidentSelect = document.getElementById("incident");
 
-if(callType==="OUTDUTY"){
-return `${getTimestamp()} - ${vehicle}: Mobile Outduty on ${km}km`;
-}
+incidentSelect.innerHTML = '<option value="">Select Incident</option>';
 
-if(callType==="AREA PATROL"){
-return `${getTimestamp()} - ${vehicle}: Mobile Area Patrol on ${km}km`;
-}
+if(incidents[callType]){
+incidentSelect.disabled = false;
 
-if(callType==="RETURN TO STATION"){
-return `${getTimestamp()} - ${vehicle}: Return to station on ${km}km`;
-}
-
-const areaText = area && area.trim() !== "" ? `${area} ` : "";
-
-if(["TRAUMA CALL","MEDICAL","FIRECALL"].includes(callType)){
-return `${getTimestamp()} - ${callType}: ${vehicle} mobile ${incident} ${areaText}on ${km}km`;
-}
-
-return `${getTimestamp()} - ${callType}: ${vehicle} mobile ${areaText}on ${km}km`;
-}
-
-function updateSummaryDisplay(){
-
-const summaryDiv=document.getElementById("summaryList");
-summaryDiv.innerHTML="";
-
-summaryData.forEach(item=>{
-const div=document.createElement("div");
-div.className="summaryItem";
-div.textContent=item;
-summaryDiv.appendChild(div);
+incidents[callType].forEach(item=>{
+const option = document.createElement("option");
+option.value = item;
+option.textContent = item;
+incidentSelect.appendChild(option);
 });
 
+}else{
+incidentSelect.disabled = true;
 }
 
-function logEntry(){
+const areaInput = document.getElementById("area");
 
-const vehicle=document.getElementById("vehicle").value;
-const callType=document.getElementById("callType").value;
-const incident=document.getElementById("incident").value;
-const area=document.getElementById("area").value;
-const km=document.getElementById("km").value;
-
-if(!vehicle||!callType||!km) return null;
-
-if(["TRAUMA CALL","MEDICAL","FIRECALL"].includes(callType)&&!incident){
-return null;
+if(isAreaLocked(callType)){
+areaInput.value = "";
+areaInput.disabled = true;
+}else{
+areaInput.disabled = false;
 }
 
-const entry=formatEntry(vehicle,callType,incident,area,km);
+updateLiveDraft();
+});
+
+/* LIVE DRAFT ONLY */
+function updateLiveDraft(){
+
+const vehicle = document.getElementById("vehicle").value;
+const callType = document.getElementById("callType").value;
+const incident = document.getElementById("incident").value;
+const area = document.getElementById("area").value;
+const km = document.getElementById("km").value;
+
+if(!vehicle || !callType) return;
+
+draftEntry = formatEntry(vehicle, callType, incident, area, km || "");
+updateSummaryDisplay();
+}
+
+/* FINALISE (ONLY MANUAL OR ENTER KEY) */
+function finaliseEntry(){
+
+const vehicle = document.getElementById("vehicle").value.trim();
+const callType = document.getElementById("callType").value.trim();
+const incident = document.getElementById("incident").value.trim();
+const area = document.getElementById("area").value.trim();
+const km = document.getElementById("km").value.trim();
+
+if(!vehicle || !callType || !km){
+return;
+}
+
+if(["TRAUMA CALL","MEDICAL","FIRECALL"].includes(callType) && !incident){
+return;
+}
+
+const entry = formatEntry(vehicle, callType, incident, area, km);
 
 summaryData.push(entry);
-localStorage.setItem("callSummary",JSON.stringify(summaryData));
+localStorage.setItem("callSummary", JSON.stringify(summaryData));
 
+draftEntry = null;
+
+// reset
 document.getElementById("vehicle").value="";
 document.getElementById("callType").value="";
 document.getElementById("incident").innerHTML='<option value="">Select Incident</option>';
@@ -272,45 +269,94 @@ document.getElementById("area").value="";
 document.getElementById("km").value="";
 
 updateSummaryDisplay();
-
-return entry;
 }
 
-/* WHATSAPP (NO TIME REMOVAL NEEDED HERE ANYMORE IF YOU KEEP FORMAT SAME) */
-function shareToWhatsApp(){
+/* ONLY ENTER triggers finalise */
+document.getElementById("km").addEventListener("keydown", function(e){
+if(e.key === "Enter"){
+finaliseEntry();
+}
+});
 
-let entry=logEntry();
+/* LIVE UPDATE */
+["vehicle","callType","incident","area"].forEach(id=>{
+document.getElementById(id).addEventListener("input", updateLiveDraft);
+});
 
-if(!entry&&summaryData.length>0){
-entry=summaryData[summaryData.length-1];
+/* FORMAT */
+function formatEntry(vehicle,callType,incident,area,km){
+
+if(callType === "E-FUEL"){
+return `${getTimestamp()} - ${vehicle}: Mobile E-Fuel on ${km}km`;
 }
 
-if(!entry){
-alert("Please complete all required fields.");
+if(callType === "OUTDUTY"){
+return `${getTimestamp()} - ${vehicle}: Mobile Outduty on ${km}km`;
+}
+
+if(callType === "AREA PATROL"){
+return `${getTimestamp()} - ${vehicle}: Mobile Area Patrol on ${km}km`;
+}
+
+if(callType === "RETURN TO STATION"){
+return `${getTimestamp()} - ${vehicle}: Return to station on ${km}km`;
+}
+
+const areaText = area ? `${area} ` : "";
+
+if(["TRAUMA CALL","MEDICAL","FIRECALL"].includes(callType)){
+return `${getTimestamp()} - ${callType}: ${vehicle} mobile ${incident} ${areaText}on ${km}km`;
+}
+
+return `${getTimestamp()} - ${callType}: ${vehicle} mobile ${areaText}on ${km}km`;
+}
+
+/* SUMMARY */
+function updateSummaryDisplay(){
+
+const div = document.getElementById("summaryList");
+div.innerHTML = "";
+
+summaryData.forEach(item=>{
+const el = document.createElement("div");
+el.className = "summaryItem";
+el.textContent = item;
+div.appendChild(el);
+});
+
+if(draftEntry){
+const el = document.createElement("div");
+el.className = "summaryItem";
+el.style.fontStyle = "italic";
+el.style.opacity = "0.7";
+el.textContent = draftEntry + " (draft)";
+div.appendChild(el);
+}
+}
+
+/* WHATSAPP (FULL ISOLATION) */
+function shareToWhatsApp(e){
+
+if(e) e.preventDefault();
+e?.stopPropagation();
+
+const lastEntry = summaryData.at(-1);
+
+if(!lastEntry){
 return;
 }
 
-entry = entry.replace(/^\d{2}:\d{2}\s-\s/, "");
-
-window.open("https://wa.me/?text="+encodeURIComponent(entry));
+const cleanEntry = lastEntry.replace(/^\d{2}:\d{2}\s-\s/, "");
+window.location.href = "https://wa.me/?text=" + encodeURIComponent(cleanEntry);
 }
 
+/* CLEAR */
 function clearSummary(){
 if(confirm("Are you sure?")){
-summaryData=[];
-localStorage.setItem("callSummary",JSON.stringify(summaryData));
+summaryData = [];
+localStorage.setItem("callSummary", JSON.stringify(summaryData));
 updateSummaryDisplay();
 }
-}
-
-function exportSummary(){
-if(summaryData.length===0){
-alert("No calls to export.");
-return;
-}
-
-const header=`SHIFT OB ENTRIES\n${new Date().toLocaleDateString()}\n\n`;
-window.open("https://wa.me/?text="+encodeURIComponent(header+summaryData.join("\n")));
 }
 
 /* INIT */
